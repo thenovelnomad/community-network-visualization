@@ -17,7 +17,7 @@ svg.append("g").append("clipPath")
   .append("circle")
     .attr("r", 30)
 
-d3.json("./data/data2.json", function(error, graph) {
+d3.json("./data/data3.json", function(error, graph) {
   force
       .nodes(graph.nodes)
       .links(graph.links)
@@ -33,17 +33,12 @@ d3.json("./data/data2.json", function(error, graph) {
       .data(graph.nodes)
     .enter().append("g")
       .attr("class", "node")
-      .attr("height", 100)
-      .attr("width", 100)
+      // .attr("height", 10)
+      // .attr("width", 10)
       .call(force.drag);
 
-  gNode.append("text")
-      .attr("dx", function(d) { return d.radius; })
-      .attr("dy", ".35em")
-      .text(function(d) { return d.name });
-
-  var node = gNode.append("circle")
-  	.attr("r", function(d) { return d.radius; })
+  gNode.append("circle")
+    .attr("r", function(d) { return d.radius; })
      .style("fill", function(d) { return color(d.group); });
 
   gNode.append("image")
@@ -57,6 +52,12 @@ d3.json("./data/data2.json", function(error, graph) {
     .attr("y", -30)
     .attr("width", 60)
     .attr("height", 60);
+
+  gNode.append("text")
+    .attr("text-anchor", "middle")
+    .attr("dx", 0)
+    .attr("dy", function(d) { return d.radius*2.5; })
+    .text(function(d) { return d.name });
 
   force.on("tick", function() {
     link.attr("x1", function(d) { return d.source.x; })

@@ -7,11 +7,15 @@ TODO
         Members
           DONE - Picture as the node
           Filter by skills
+          click opens modal ala current webpage
+          
 
 
         Projects
           Node size scaled by number of links
             Create d3 scale
+          hover highlights connected nodes
+          use company icons as nodes
         
         Ideas
           Text-only, unlinked node
@@ -27,5 +31,11 @@ TODO
         compile members, projects, events dbs
           define member-project links based on project
           store total links on project node
+          store skills on member nodes
+
+      hover highlights connected nodes
+      Zoom and/or responsive scale
+      100state logo background
+
 
 
