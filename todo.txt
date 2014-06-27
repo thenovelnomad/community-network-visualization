@@ -1,0 +1,31 @@
+TODO
+  
+  Community data visualization
+
+    Elements
+
+        Members
+          DONE - Picture as the node
+          Filter by skills
+
+
+        Projects
+          Node size scaled by number of links
+            Create d3 scale
+        
+        Ideas
+          Text-only, unlinked node
+          Font size/weight scaled by likes(rsvps?)
+          ?Can transform into project
+
+        Events
+
+
+    Features
+
+      Data processing
+        compile members, projects, events dbs
+          define member-project links based on project
+          store total links on project node
+
+

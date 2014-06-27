@@ -4,7 +4,7 @@
 			"id": 1,
 			"name": "100 state",
 			"link": "http://www.100state.com",
-			"type": "circle",
+			"type": "org",
 			"radius": 60,
 			"group": 1
 		},
@@ -12,98 +12,107 @@
 			"id": 2,
 			"name": "100 health",
 			"link": "http://www.100health.it",
-			"type": "circle",
+			"type": "org",
 			"radius": 30,
 			"group": 1
 		},
 		{
 			"id": 3,
 			"name": "100 innovations",
-			"type": "circle",
+			"type": "org",
 			"radius": 30,
 			"group": 1
 		},
 		{
 			"id": 4,
 			"name": "Member 1",
-			"type": "circle",
-			"radius": 10,
+			"type": "mem",
+			"url": "http://100state.com/wp-content/themes/100state/img/avatar.png",
+			"desc": "Here is some stuff about Member",
+			"radius": 30,
 			"group": 2
 		},
 		{
 			"id": 5,
 			"name": "Member 2",
-			"type": "circle",
-			"radius": 10,
+			"type": "mem",
+			"url": "http://100state.com/wp-content/themes/100state/img/avatar.png",
+			"desc": "Here is some stuff about Member",
+			"radius": 30,
 			"group": 2
 		},
 		{
 			"id": 6,
 			"name": "Member 3",
-			"type": "circle",
-			"radius": 10,
+			"type": "mem",
+			"url": "http://100state.com/wp-content/themes/100state/img/avatar.png",
+			"desc": "Here is some stuff about Member",
+			"radius": 30,
 			"group": 2
 		},
 		{
 			"id": 7,
 			"name": "Member 4",
-			"type": "circle",
-			"radius": 10,
+			"type": "mem",
+			"url": "http://100state.com/wp-content/themes/100state/img/avatar.png",
+			"radius": 30,
 			"group": 2
 		},
 		{
 			"id": 8,
 			"name": "Member 5",
-			"type": "circle",
-			"radius": 10,
+			"type": "mem",
+			"url": "http://100state.com/wp-content/themes/100state/img/avatar.png",
+			"radius": 30,
 			"group": 2
 		},
 		{
 			"id": 9,
 			"name": "Member 6",
-			"type": "circle",
-			"radius": 10,
+			"type": "mem",
+			"url": "http://100state.com/wp-content/themes/100state/img/avatar.png",
+			"radius": 30,
 			"group": 2
 		},
 		{
 			"id": 10,
 			"name": "Project 1",
-			"type": "text",
+			"type": "prj",
 			"radius": 15,
 			"group": 3
 		},
 		{
 			"id": 11,
 			"name": "Project 2",
-			"type": "text",
+			"type": "prj",
 			"radius": 15,
 			"group": 3
 		},
 		{
 			"id": 12,
 			"name": "Project 3",
-			"type": "text",
+			"type": "prj",
 			"radius": 15,
 			"group": 3
 		},
 		{
 			"id": 13,
 			"name": "Project 4",
-			"type": "text",
+			"type": "prj",
 			"radius": 15,
 			"group": 3
 		},
 		{
 			"id": 14,
 			"name": "Project 5",
-			"type": "text",
+			"type": "prj",
 			"radius": 15,
 			"group": 3
 		},
 		{
 			"id": 15,
 			"name": "Project 6",
-			"type": "text",
+			"type": "prj",
 			"radius": 15,
 			"group": 3
 		}

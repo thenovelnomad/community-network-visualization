@@ -4,13 +4,18 @@ var width = 960,
 var color = d3.scale.category20();
 
 var force = d3.layout.force()
+    .gravity(0.1)
     .charge(-1000)
-    .linkDistance(200)
+    .linkDistance(150)
     .size([width, height]);
 
 var svg = d3.select(".row").append("svg")
-    .attr("width", width)
+    .attr("width", "100%")
     .attr("height", height);
+svg.append("g").append("clipPath")
+    .attr("id","circle-path")
+  .append("circle")
+    .attr("r", 30)
 
 d3.json("./data/data2.json", function(error, graph) {
   force
@@ -32,22 +37,35 @@ d3.json("./data/data2.json", function(error, graph) {
       .attr("width", 100)
       .call(force.drag);
 
+  gNode.append("text")
+      .attr("dx", function(d) { return d.radius; })
+      .attr("dy", ".35em")
+      .text(function(d) { return d.name });
+
   var node = gNode.append("circle")
   	.attr("r", function(d) { return d.radius; })
-      .style("fill", function(d) { return color(d.group); });
+     .style("fill", function(d) { return color(d.group); });
 
-  node.append("text")
-  	.attr("dx", function(d) { return -20; })
-    .text(function(d) { return d.name; });
+  gNode.append("image")
+    .attr("clip-path", "url(#circle-path)")
+    .attr("xlink:href", function(d) { 
+      if (d.url) {
+        return d.url;
+      }
+    })
+    .attr("x", -30)
+    .attr("y", -30)
+    .attr("width", 60)
+    .attr("height", 60);
 
   force.on("tick", function() {
     link.attr("x1", function(d) { return d.source.x; })
         .attr("y1", function(d) { return d.source.y; })
         .attr("x2", function(d) { return d.target.x; })
         .attr("y2", function(d) { return d.target.y; });
-
-    node.attr("cx", function(d) { return d.x; })
-        .attr("cy", function(d) { return d.y; });
+    gNode.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+    // node.attr("cx", function(d) { return d.x; })
+    //     .attr("cy", function(d) { return d.y; });
   });
 });
 

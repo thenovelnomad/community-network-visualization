@@ -4,6 +4,8 @@
    Author's custom styles
    ========================================================================== */
 
+
+
 .node {
   stroke: #fff;
   stroke-width: 1.5px;
@@ -14,6 +16,11 @@
   stroke-opacity: .6;
 }
 
+.node text {
+  pointer-events: none;
+  font: 30px sans-serif;
+  font-weight: bold;
+}
 
 
 
