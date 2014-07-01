@@ -1,0 +1,35 @@
+All test data generated from www.json-generator.com
+
+Member template:
+[
+  '{{repeat(100, 150)}}',
+  {
+    id: '{{index()}}',
+    image: "http://100state.com/wp-content/themes/100state/img/avatar.png",
+    name: '{{firstName()}} {{surname()}}',
+    company: '{{company().toUpperCase()}}',
+    email: '{{email()}}',
+    about: '{{lorem(1, "paragraphs")}}',
+    tags: [
+      '{{repeat(7)}}',
+      '{{lorem(1, "words")}}'
+    ]
+  }
+]
+
+Project template:
+[
+  '{{repeat(50, 75)}}',
+  {
+    id: '{{index()}}',
+    isActive: '{{bool()}}',
+    picture: 'http://placehold.it/32x32',
+    company: '{{company().toUpperCase()}}',
+    email: '{{email()}}',
+    about: '{{lorem(1, "paragraphs")}}',
+    member_id: [
+      '{{repeat(integer(0,5))}}',
+      '{{integer(0,130)}}'
+    ]
+  }
+]
