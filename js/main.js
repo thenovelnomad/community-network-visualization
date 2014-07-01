@@ -32,9 +32,7 @@ d3.json("./data/data3.json", function(error, graph) {
   var gNode = svg.selectAll(".node")
       .data(graph.nodes)
     .enter().append("g")
-      .attr("class", "node")
-      // .attr("height", 10)
-      // .attr("width", 10)
+      .attr("class", function(d) { return "node" + d.type; })
       .call(force.drag);
 
   gNode.append("circle")
@@ -56,7 +54,13 @@ d3.json("./data/data3.json", function(error, graph) {
   gNode.append("text")
     .attr("text-anchor", "middle")
     .attr("dx", 0)
-    .attr("dy", function(d) { return d.radius*2.5; })
+    .attr("dy", function(d) { 
+      if (d.type === "mem") {
+        return d.radius*1.5;
+      } else if (d.type === "prj") {
+        return d.radius*2.0;
+      } 
+    })
     .text(function(d) { return d.name });
 
   force.on("tick", function() {
