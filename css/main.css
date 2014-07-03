@@ -20,12 +20,12 @@ body {
   stroke-opacity: .6;
 }
 
-.node text {
+.nodemem text, .nodeprj text {
   pointer-events: none;
-  font: 30px sans-serif;
+  font: 15px sans-serif;
   font-weight: bold;
+  z-index: 10001;
 }
-
 
 
 

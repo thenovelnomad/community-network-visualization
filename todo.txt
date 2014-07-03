@@ -5,17 +5,21 @@ TODO
     Elements
 
         Members
-          DONE - Picture as the node
+          show/hide member name (& picture ?) on hover
+          hover highlights connected nodes
           Filter by skills
           click opens modal ala current webpage
+            or sub-frame?
+          add tagline to data structure
           
 
 
         Projects
-          Node size scaled by number of links
-            Create d3 scale
+          Create d3 scale for project node radius
           hover highlights connected nodes
           use company icons as nodes
+
+          boolean flag for "100state project"
         
         Ideas
           Text-only, unlinked node
@@ -24,18 +28,28 @@ TODO
 
         Events
 
+        Add sponsors
+
+        100 state = node 0
+          connect to sponsors
+          other projects
 
     Features
 
       Data processing
-        compile members, projects, events dbs
-          define member-project links based on project
-          store total links on project node
-          store skills on member nodes
+        compile events dbs
 
       hover highlights connected nodes
       Zoom and/or responsive scale
-      100state logo background
+      
+
+DONE
+
+  Member picture as node
+  Data processing
+        compile members, projects test data
+  100state logo background
+  Node size scaled by number of links
 
 
-
+Website re-design ideas
