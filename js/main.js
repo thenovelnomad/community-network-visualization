@@ -1,6 +1,38 @@
 var graph = { "nodes": [], "links": []};
 
+var rowWidth = d3.select("#main")[0][0].offsetWidth;
+
+var width = rowWidth || 960;
+var height = 1000;
+
 var memberRadius = 10
+
+var color = d3.scale.category20();
+
+var force = d3.layout.force()
+    .gravity(0.1)
+    .charge(-100)
+    .linkDistance(150)
+    .size([width, height]);
+
+var svg = d3.select("#main").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+svg.append("g").append("clipPath")
+    .attr("id","small-pic-path")
+  .append("circle")
+    .attr("r", memberRadius);
+svg.append("g").append("clipPath")
+    .attr("id","large-pic-path")
+  .append("circle")
+    .attr("r", 3*memberRadius);
+
+var resize = function() {
+  width = d3.select("#main")[0][0].offsetWidth;
+  svg.attr("width", width);
+  force.size([width, height]);
+  force.tick();
+};
 
 var showDetails = function(d, i){
   var self = d3.select(this);
@@ -27,6 +59,8 @@ var hideDetails = function(d, i){
   
   self.select("text").classed("hide", true);
 };
+
+d3.select(window).on('resize', resize); 
 
 
 $.getJSON( "./data/members.json", function (members) {
@@ -74,9 +108,6 @@ $.getJSON( "./data/members.json", function (members) {
     });
     console.log(graph);
 
-    var width = 960,
-    height = 1000;
-
     // countExtent = d3.extent(graph.nodes, function(d) { d.num_links; });
     // circleRadius = d3.scale.sqrt().range([3, 12]).domain(countExtent);
  
@@ -105,26 +136,6 @@ $.getJSON( "./data/members.json", function (members) {
       // # linkedByIndex is used for link sorting
       // linkedByIndex["#{l.source.id},#{l.target.id}"] = 1;
     });
-
-    var color = d3.scale.category20();
-
-    var force = d3.layout.force()
-        .gravity(0.1)
-        .charge(-100)
-        .linkDistance(150)
-        .size([width, height]);
-
-    var svg = d3.select(".row").append("svg")
-        .attr("width", "100%")
-        .attr("height", height);
-    svg.append("g").append("clipPath")
-        .attr("id","small-pic-path")
-      .append("circle")
-        .attr("r", memberRadius);
-    svg.append("g").append("clipPath")
-        .attr("id","large-pic-path")
-      .append("circle")
-        .attr("r", 3*memberRadius);
 
     // d3.json("./data/data3.json", function(error, graph) {
     force
@@ -171,13 +182,13 @@ $.getJSON( "./data/members.json", function (members) {
       .on("mouseout", hideDetails);
 
     force.on("tick", function() {
+      gNode.attr("cx", function(d) { return d.x = Math.max(15, Math.min(width - 15, d.x)); })
+        .attr("cy", function(d) { return d.y = Math.max(15, Math.min(height - 15, d.y)); });
       link.attr("x1", function(d) { return d.source.x; })
           .attr("y1", function(d) { return d.source.y; })
           .attr("x2", function(d) { return d.target.x; })
           .attr("y2", function(d) { return d.target.y; });
-      gNode.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-      // node.attr("cx", function(d) { return d.x; })
-      //     .attr("cy", function(d) { return d.y; });
+      gNode.attr("transform", function(d) { return "translate(" + d.x + "," + d.y+ ")"; });
     });
   });
 });

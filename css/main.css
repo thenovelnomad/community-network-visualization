@@ -5,9 +5,14 @@
    ========================================================================== */
 
 body {
-	background: url("http://100state.com/wp-content/themes/100state/img/logo.svg") no-repeat;
+	/*background: url("http://100state.com/wp-content/themes/100state/img/logo.svg") no-repeat;*/
 	background-color: #d3d3d3;
-	background-position: 50%;
+	/*background-position: 50%;*/
+}
+
+svg {
+  display: block;
+  margin: 0 auto;
 }
 
 .node {

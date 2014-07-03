@@ -5,7 +5,6 @@ TODO
     Elements
 
         Members
-          show/hide member name (& picture ?) on hover
           hover highlights connected nodes
           Filter by skills
           click opens modal ala current webpage
@@ -50,6 +49,7 @@ DONE
         compile members, projects test data
   100state logo background
   Node size scaled by number of links
+  show/hide member name (& picture ?) on hover
 
 
 Website re-design ideas
