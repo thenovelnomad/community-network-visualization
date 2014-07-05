@@ -1,18 +1,19 @@
 var graph = { "nodes": [], "links": []};
+var linkedByIndex = [];
 
 var rowWidth = d3.select("#main")[0][0].offsetWidth;
 
 var width = rowWidth || 960;
 var height = 1000;
 
-var memberRadius = 10
+var memberRadius = 15;
 
 var color = d3.scale.category20();
 
 var force = d3.layout.force()
     .gravity(0.1)
-    .charge(-100)
-    .linkDistance(150)
+    .charge(-200)
+    .linkDistance(100)
     .size([width, height]);
 
 var svg = d3.select("#main").append("svg")
@@ -25,7 +26,7 @@ svg.append("g").append("clipPath")
 svg.append("g").append("clipPath")
     .attr("id","large-pic-path")
   .append("circle")
-    .attr("r", 3*memberRadius);
+    .attr("r", 2*memberRadius);
 
 var resize = function() {
   width = d3.select("#main")[0][0].offsetWidth;
@@ -34,21 +35,43 @@ var resize = function() {
   force.tick();
 };
 
-var showDetails = function(d, i){
+var hoverOn = function(d, i){
   var self = d3.select(this);
+  var link = d3.selectAll(".link");
+  var node = d3.selectAll(".node");
+  var mul = 2;
 
-  self.select("image")
-      .attr("clip-path", "url(#large-pic-path)")
-      .attr("x", function(d) { return -3*d.radius; })
-      .attr("y", function(d) { return -3*d.radius; })
-      .attr("width", function(d) { return 6*d.radius; })
-      .attr("height", function(d) { return 6*d.radius; });
+  if (d.type === "mem") {
+    self.select("circle")
+        .attr("r", function(d) { return mul*d.radius + 2; });
+
+    self.select("image")
+        .attr("clip-path", "url(#large-pic-path)")
+        .attr("x", function(d) { return -mul*d.radius; })
+        .attr("y", function(d) { return -mul*d.radius; })
+        .attr("width", function(d) { return 2*mul*d.radius; })
+        .attr("height", function(d) { return 2*mul*d.radius; });
+  }
 
   self.select("text").classed("hide", false);
+
+  link
+    .style("stroke-width", function(l) {
+      if (l.source == d || l.target == d) { return 3*Math.sqrt(l.value); } 
+      else { return Math.sqrt(l.value); }
+    })
+    .style("stroke-opacity", function(l) {
+      if (l.source == d || l.target == d) { return 1.0; } 
+      else { return 0.5; }
+    });
 };
 
-var hideDetails = function(d, i){
+var hoverOff = function(d, i){
   var self = d3.select(this);
+  var link = d3.selectAll(".link");
+
+  self.select("circle")
+      .attr("r", function(d) { return d.radius; });
 
   self.select("image")
       .attr("clip-path", "url(#small-pic-path)")
@@ -58,6 +81,10 @@ var hideDetails = function(d, i){
       .attr("height", function(d) { return 2*d.radius; });
   
   self.select("text").classed("hide", true);
+
+  link
+    .style("stroke-width", function(l) { return Math.sqrt(l.value); })
+    .style("stroke-opacity", function(l) { return 0.5; });
 };
 
 d3.select(window).on('resize', resize); 
@@ -143,21 +170,21 @@ $.getJSON( "./data/members.json", function (members) {
         .links(graph.links)
         .start();
 
-    var link = svg.selectAll(".link")
+    link = svg.selectAll(".link")
         .data(graph.links)
       .enter().append("line")
         .attr("class", "link")
         .style("stroke-width", function(d) { return Math.sqrt(d.value); });
 
-    var gNode = svg.selectAll(".node")
+    gNode = svg.selectAll(".node")
         .data(graph.nodes)
       .enter().append("g")
-        .attr("class", function(d) { return "node" + d.type; })
+        .attr("class", function(d) { return "node " + d.type; })
         .call(force.drag);
 
     gNode.append("circle")
       .attr("r", function(d) { return d.radius; })
-       .style("fill", function(d) { return color(d.group); });
+       .style("fill", "red");
 
     gNode.append("image")
       .attr("clip-path", "url(#small-pic-path)")
@@ -178,8 +205,10 @@ $.getJSON( "./data/members.json", function (members) {
       .attr("dy", function(d) { return 2.5*d.radius; })
       .text(function(d) { return d.name });
 
-    gNode.on("mouseover", showDetails)
-      .on("mouseout", hideDetails);
+    d3.select(window).on('resize', resize); 
+
+    gNode.on("mouseover", hoverOn)
+      .on("mouseout", hoverOff);
 
     force.on("tick", function() {
       gNode.attr("cx", function(d) { return d.x = Math.max(15, Math.min(width - 15, d.x)); })
