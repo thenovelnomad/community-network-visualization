@@ -10,6 +10,8 @@ var Network = function() {
   var curLinksData = [];
   var curNodesData = [];
   var linkedByIndex = {};
+  var skillsArr = ["web design","social media","public speaking", "mobile app development", "project management", "data analysis", "high fives", "demotivational speaking"];
+
 
   var nodesG = null;
   var linksG = null;
@@ -26,6 +28,13 @@ var Network = function() {
     .size([width, height]);
 
   //initialize private functions
+  var skillsSetup = function() {
+    d3.select("#skills-filter").selectAll("option")
+      .data(skillsArr).enter()
+      .append("option")
+      .text(function(d) { return d; });
+  }();
+
   var mapNodes = function(nodes) {
     nodesMap = d3.map();
     nodes.forEach(function(n) {
@@ -110,6 +119,7 @@ var Network = function() {
         .on("mouseout", hoverOff);
 
     node.on("mouseup", showDetails);
+    detailsModal.on("hidden.bs.modal", hideDetails);
 
     node.exit().remove();
   }
@@ -233,39 +243,99 @@ var Network = function() {
   };
 
   var showDetails = function(d, i) {
+    hideDetails();
+
     var self = d3.select(this);
     var myModal = d3.select("#myModal");
+    var label = myModal.select("#myModalLabel");
     var skills = myModal.select("#skills");
     var projects = myModal.select("#projects");
+    var interests = myModal.select("#interests");
+    var projArr = [];
 
     if (d.url) {
-      myModal.select("#node-url")
-        .attr("href", d.url);
+      var link = label.select("a")[0][0] ? label.select("a") : label.append("a");
+      link
+        .attr("src", d.url)
+        .text(d.name);
+    } else {
+      myModal.select("#myModalLabel")
+        .text(d.name);
     }
-    
-    myModal.select("#myModalLabel")
-      .text(d.name);
 
-    myModal.select("img")
-      .attr("src", d.image)
-      .classed("round", d.type == "mem");
+    if (d.image) {
+      myModal.select("img")
+        .attr("src", d.image)
+        .classed("round", d.type == "mem");
+      myModal.select("#modal-image").classed("hide", false);
+      myModal.select("#modal-info").classed("col-md-9", true);
+    } 
 
     myModal.select("#about").select("p")
       .text(d.desc);
 
     if (d.type == "mem"){
-      skills.select("ul").selectAll("li")
-        .data(d.skills).enter()
-        .append("li")
-        .classed("pull-left", true)
-        .text(function(d) { return d; });
+      if (d.interests.length > 0) {
+        interests.select("ul").selectAll("li")
+          .data(d.interests).enter()
+          .append("li")
+          .classed("pull-left", true)
+          .text(function(d) { return d; });
+      
+        interests.classed("hide", false);
+      }
+      
+      if (d.skills.length > 0) {
+        skills.select("ul").selectAll("li")
+          .data(d.skills).enter()
+          .append("li")
+          .classed("pull-left", true)
+          .text(function(d) { return d; });
+  
+        skills.classed("hide", false);
+      }
 
-      skills.classed("hide", false);
-    } else {
-      skills.classed("hide", true);
+      allData.nodes.forEach(function(element, index, array) {
+        if (neighboring(d, element)) {
+          projArr.push(element.name);
+        }
+      });
+
+      if (projArr.length > 0) {
+        projects.select("ul").selectAll("li")
+          .data(projArr).enter()
+          .append("li")
+          .classed("pull-left", true)
+          .text(function(d) { return d; });
+
+        projects.classed("hide", false);
+      }
     }
 
     detailsModal.modal('show');
+  };
+
+  var hideDetails = function() {
+    var myModal = d3.select("#myModal");
+    var interests = myModal.select("#interests");
+    var skills = myModal.select("#skills");
+    var projects = myModal.select("#projects");
+
+    myModal.select("img").attr("src", "");
+    myModal.select("#modal-image").classed("hide", true);
+    myModal.select("#modal-info").classed("col-md-9", false);
+
+    myModal.select("#myModalLabel")
+      .text("")
+      .select("a").remove();
+
+    interests.select("ul").selectAll("li").remove();
+    interests.classed("hide", true);
+    skills.select("ul").selectAll("li").remove();
+    skills.classed("hide", true);
+    projects.select("ul").selectAll("li").remove();
+    projects.classed("hide", true);
+
   }
 
   
@@ -350,7 +420,8 @@ var processData = function(data) {
           "name": element.name,
           "image": element.image,
           "desc": element.about,
-          "skills": element.tags,
+          "skills": element.skills,
+          "interests": element.interests,
           "type": "mem",
           "radius": 15,
           "group": 1

@@ -40,15 +40,16 @@ svg {
   top: auto;
 }
 
-#skills ul {
+.modal ul {
   list-style-type: none;
 }
 
-#skills li {
+.modal li {
   padding: 0 20px 0 0;
 }
 
 .round {
+  border: 5px solid red;
   border-radius: 1000px;
 }
 

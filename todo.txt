@@ -1,4 +1,12 @@
 TODO
+
+  Priority list
+    DONE - Add projects to member modal
+    DONE - Add interests to members data structure
+    Skill search
+    Interest search
+    UPdate graph on click to show only clicked node and connected
+    
   
   Community data visualization
 
