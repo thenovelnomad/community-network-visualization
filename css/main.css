@@ -29,8 +29,27 @@ svg {
   stroke-width: 0px;
   pointer-events: none;
   font: 15px sans-serif;
-  font-weight: bold;
   z-index: 10001;
+}
+
+.modal-open {
+  overflow: auto;
+}
+
+.modal {
+  top: auto;
+}
+
+#skills ul {
+  list-style-type: none;
+}
+
+#skills li {
+  padding: 0 20px 0 0;
+}
+
+.round {
+  border-radius: 1000px;
 }
 
 

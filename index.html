@@ -47,6 +47,40 @@
       <div id="main" class="row">
         
       </div>
+      <!-- Modal -->
+      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <a id="node-url" href=""><h4 class="modal-title text-center" id="myModalLabel"></h4></a>
+            </div>
+            <div class="modal-body row">
+                <div class="col-md-2">
+                    <img src="" width="100px">
+                </div>
+                <div class="col-md-10">
+                    <div id="about"><p></p></div>
+                    <div id="interests" class="hide">
+                        <strong>Interests</strong>
+                        <ul>
+                        </ul>
+                    </div>
+                    <div id="skills" class="hide">
+                        <strong>Skills</strong>
+                        <ul>
+                        </ul>
+                    </div>
+                    <div id="projects" class="hide">
+                        <strong>Projects</strong>
+                        <ul>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <hr>
 
@@ -57,10 +91,10 @@
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.0.min.js"><\/script>')</script>
 
         <script src="js/vendor/bootstrap.min.js"></script>
-        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <script src="js/vendor/d3.min.js"></script>
 
         <script src="js/plugins.js"></script>
-        <script src="js/main.js"></script>
+        <script src="js/main2.js"></script>
 
         <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
         <script>

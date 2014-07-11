@@ -27,6 +27,7 @@ Project template:
     company: '{{company().toUpperCase()}}',
     email: '{{email()}}',
     about: '{{lorem(1, "paragraphs")}}',
+    state_prj: '{{bool()}}',
     member_id: [
       '{{repeat(integer(0,5))}}',
       '{{integer(0,130)}}'
