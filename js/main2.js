@@ -21,6 +21,7 @@ var Network = function() {
 
   //viz variables
   var layout = "force";
+  var filter;
   var force = d3.layout.force()
     .linkDistance(200)
     .gravity(.2)
@@ -70,9 +71,28 @@ var Network = function() {
     return data;
   };
 
+  var filterNodes = function(allNodes) {
+    var filteredNodes = allNodes;
+    if (filter) {
+      filteredNodes = allNodes.filter(function(d, i) {
+        if (filter.type == "skills") {
+          return d.skills.indexOf(filter.key) > 0;
+        }
+      });
+    }
+    return filteredNodes;
+  };
+
+  var filterLinks = function(allLinks, curNodes) {
+    var curNodes = mapNodes(curNodes);
+    allLinks.filter(funciton(l) {
+      return curNodes.get(l.source.id) && curNodes.get(l.target.id);
+    });
+  }
+
   var updateNodes = function() {
     node = nodesG.selectAll(".node")
-      .data(curNodesData)
+      .data(curNodesData);
 
     node.enter().append("g")
       .attr("class", "node")
@@ -88,7 +108,7 @@ var Network = function() {
         }
       })
       .style("stroke", "black")
-      .style("stroke-width", 2.0)
+      .style("stroke-width", 2.0);
 
     node.append("image")
       .attr("clip-path", function(d) {
@@ -136,8 +156,8 @@ var Network = function() {
   }
 
   var update = function() {
-    curNodesData = allData.nodes;
-    curLinksData = allData.links;
+    curNodesData = filterNodes(allData.nodes);
+    curLinksData = filterLinks(allData.links, curNodesData);
 
     force.nodes(curNodesData)
       .links(curLinksData)
