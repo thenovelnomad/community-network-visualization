@@ -22,7 +22,7 @@ svg {
 
 .link {
   stroke: #ff0000;
-  stroke-opacity: .5;
+  /*stroke-opacity: .5;*/
 }
 
 .node text {

@@ -28,6 +28,8 @@ var Network = function() {
     .charge(-300)
     .size([width, height]);
 
+  // setFilter(filter);
+
   //initialize private functions
   var skillsSetup = function() {
     d3.select("#skills-filter").selectAll("option")
@@ -71,12 +73,19 @@ var Network = function() {
     return data;
   };
 
+  var setFilter = function(newFilter) {
+    filter = newFilter;
+  };
+
   var filterNodes = function(allNodes) {
     var filteredNodes = allNodes;
-    if (filter) {
+    if (filter && filter.key !== "-") {
       filteredNodes = allNodes.filter(function(d, i) {
-        if (filter.type == "skills") {
+        if (filter.type == "skills" && d.skills) {
           return d.skills.indexOf(filter.key) > 0;
+        }
+        if (filter.type == "type") {
+          return d.type == filter.key;
         }
       });
     }
@@ -85,20 +94,21 @@ var Network = function() {
 
   var filterLinks = function(allLinks, curNodes) {
     var curNodes = mapNodes(curNodes);
-    allLinks.filter(funciton(l) {
+    var filteredLinks = allLinks.filter(function(l) {
       return curNodes.get(l.source.id) && curNodes.get(l.target.id);
     });
-  }
+    return filteredLinks;
+  };
 
   var updateNodes = function() {
-    node = nodesG.selectAll(".node")
-      .data(curNodesData);
+    node = nodesG.selectAll("g.node")
+      .data(curNodesData, function(d) { return d.id; });
 
-    node.enter().append("g")
+    var newNodes = node.enter().append("g")
       .attr("class", "node")
       .call(force.drag);
     
-    node.append("circle")
+    newNodes.append("circle")
       .attr("r", function(d) { return d.radius + 1; })
       .style("fill", function(d) {
         if (d.type === "prj") {
@@ -110,7 +120,7 @@ var Network = function() {
       .style("stroke", "black")
       .style("stroke-width", 2.0);
 
-    node.append("image")
+    newNodes.append("image")
       .attr("clip-path", function(d) {
         if (d.type === "mem") {
           return "url(#small-pic-path)";
@@ -128,7 +138,7 @@ var Network = function() {
       .attr("width", function(d) { return 2*d.radius; })
       .attr("height", function(d) { return 2*d.radius; });
 
-    node.append("text")
+    newNodes.append("text")
       .attr("class", "hide")
       .attr("text-anchor", "middle")
       .attr("dx", 0)
@@ -146,10 +156,10 @@ var Network = function() {
 
   var updateLinks = function() {
     link = linksG.selectAll(".link")
-      .data(curLinksData);
+      .data(curLinksData, function(d) { return d.source.id + "_" + d.target.id; });
     link.enter().append("line")
       .attr("class", "link")
-      .attr("stroke", "#ddd")
+      .attr("stroke", "red")
       .attr("stroke-opacity", 0.8);
 
     link.exit().remove();
@@ -389,6 +399,12 @@ var Network = function() {
     update();
   };
 
+  network.toggleFilter = function(newFilter) {
+    force.stop();
+    setFilter(newFilter);
+    update();
+  };
+
   //attach public functions to network object
   network.resize = function() {
     width = main[0][0].offsetWidth;
@@ -507,6 +523,24 @@ var processData = function(data) {
   var myGraph = Network();
 
   d3.select(window).on('resize', myGraph.resize);
+  
+  $("#skills-filter").on("change", function(e) {
+    var key = $(this.val);
+    console.log("Making a filter!");
+    var filter = {
+      "type": "skills",
+      "key": $(this).val()
+    };
+    myGraph.toggleFilter(filter);
+  });
+
+  d3.selectAll("#type-filter input").on("click", function(d) {
+    var filter = {
+      "type": "type",
+      "key": d3.select(this).attr("value")
+    };
+    myGraph.toggleFilter(filter);
+  })
 
   myGraph("#main", graph);
   myGraph.resize();
