@@ -43,82 +43,84 @@
     </div>
 
     <div class="container-fluid">
-      <!-- This is filter and sort options for the visualization -->
-        <div class="col-md-1"></div>
-        <div class="col-md-10">  
-            <form id="options" class="form-inline" role="form">
-                <div class="form-group col-md-3">
-                    <label for="skills-filter">Filter members by skill</label>  
-                    <select id="skills-filter" class="form-control">
-                        <option default>-</option>
-                    </select>
-                </div>
-                <div class="form-group col-md-3">
-                    <label>Search member interests</label>
-                    <input type="search" class="form-control" placeholder="Search">
-                </div>
-                <div class="form-group col-md-6">
-                    <label>Type filter</label>
-                    <div id="type-filter">
-                        <label class="radio-inline">
-                          <input type="radio" name="inlineRadioOptions" id="all-btn" value="-" checked> All
-                        </label>
-                        <label class="radio-inline">
-                          <input type="radio" name="inlineRadioOptions" id="mem-btn" value="mem"> Members
-                        </label>
-                        <label class="radio-inline">
-                          <input type="radio" name="inlineRadioOptions" id="prj-btn" value="prj"> Projects
-                        </label>
-                        <label class="radio-inline">
-                          <input type="radio" name="inlineRadioOptions" id="spn-btn" value="spn"> Sponsors
-                        </label>
+        <br>
+        <div class="row">
+            <!-- This is filter and sort options for the visualization -->
+            <div class="col-md-2">  
+                <br>
+                <br>
+                <form id="options" class="form" role="form">
+                    <div class="form-group"> 
+                        <select id="skills-filter" class="form-control">
+                            <option value="" default>Skills</option>
+                        </select>
                     </div>
-                </div>
-          </div>
-      </div>
-      <!-- This holds the visualization -->
-      <div id="main" class="row">
-      </div>
-      <!-- Modal -->
-      <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-              <h4 class="modal-title text-center" id="myModalLabel"></h4>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search">
+                    </div>
+                    <div class="form-group">
+                        <div id="type-filter">
+                            <label class="radio">
+                              <input type="radio" name="inlineRadioOptions" id="all-btn" value="" checked> All
+                            </label>
+                            <label class="radio">
+                              <input type="radio" name="inlineRadioOptions" id="mem-btn" value="mem"> Members
+                            </label>
+                            <label class="radio">
+                              <input type="radio" name="inlineRadioOptions" id="prj-btn" value="prj"> Projects
+                            </label>
+                            <label class="radio">
+                              <input type="radio" name="inlineRadioOptions" id="spn-btn" value="spn"> Sponsors
+                            </label>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="modal-body row">
-                <div id="modal-image" class="col-md-3 text-center hide">
-                    <img src="" width="150px">
-                </div>
-                <div id="modal-info" class="col-md-9">
-                    <div id="about"><p></p></div>
-                    <div id="interests" class="hide clearfix">
-                        <strong>Interests</strong>
-                        <ul>
-                        </ul>
-                    </div>
-                    <div id="skills" class="hide clearfix">
-                        <strong>Skills</strong>
-                        <ul>
-                        </ul>
-                    </div>
-                    <div id="projects" class="hide clearfix">
-                        <strong>Projects</strong>
-                        <ul>
-                        </ul>
+            <!-- This holds the visualization -->
+            <div class="col-md-10">
+                <div id="main"></div>
+                <!-- Modal -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                              <h4 class="modal-title text-center" id="myModalLabel"></h4>
+                            </div>
+                            <div class="modal-body row">
+                                <div id="modal-image" class="col-md-3 text-center hide">
+                                    <img src="" width="150px">
+                                </div>
+                                <div id="modal-info" class="col-md-9">
+                                    <div id="about"><p></p></div>
+                                    <div id="interests" class="hide clearfix">
+                                        <strong>Interests</strong>
+                                        <ul>
+                                        </ul>
+                                    </div>
+                                    <div id="skills" class="hide clearfix">
+                                        <strong>Skills</strong>
+                                        <ul>
+                                        </ul>
+                                    </div>
+                                    <div id="projects" class="hide clearfix">
+                                        <strong>Projects</strong>
+                                        <ul>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                      </div>
                     </div>
                 </div>
             </div>
-          </div>
         </div>
-      </div>
 
-      <hr>
+        <hr>
 
-      <footer>
-        <p>&copy; Company 2014</p>
-      </footer>
+        <footer>
+            <p>&copy; Company 2014</p>
+        </footer>
     </div> <!-- /container -->        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.11.0.min.js"><\/script>')</script>
 

@@ -1,8 +1,8 @@
 var Network = function() {
   //initialize graph constants, variables accessed by all functions
   var main, svg;
-  var height = 1000;
   var width = 960; //initialize resize function
+  var height = width;
   var detailsModal = $('#myModal').modal({"backdrop": false, "show": false});
 
   //data variables
@@ -20,17 +20,22 @@ var Network = function() {
   var link = null;
 
   //viz variables
+  var circleRadius = 10;
+  var linkDistance = circleRadius * 4 * 2;
   var layout = "force";
-  var filter;
+  var filter = {
+    "search": null,
+    "type": null,
+    "skill": null,
+    "selection": null
+  };
   var force = d3.layout.force()
-    .linkDistance(200)
+    .linkDistance(linkDistance)
     .gravity(.2)
-    .charge(-300)
+    .charge(-250)
     .size([width, height]);
 
-  // setFilter(filter);
-
-  //initialize private functions
+  // initialize private functions
   var skillsSetup = function() {
     d3.select("#skills-filter").selectAll("option")
       .data(skillsArr).enter()
@@ -51,12 +56,17 @@ var Network = function() {
   };
 
   var setupData = function(data) {
+    var minRadius = (width - 70);
     countExtent = d3.extent(data.nodes, function(d) { 
       if (d.num_links){
         return d.num_links;
       } 
     });
-    circleRadius = d3.scale.sqrt().range([3, 12]).domain(countExtent);
+    // circleRadius = d3.scale.sqrt().range([3, 12]).domain(countExtent);
+
+    data.nodes.forEach(function(d) {
+      d.radius = d.radius * circleRadius;
+    });
     
     // id's -> node objects
     var nodesMap = mapNodes(data.nodes);
@@ -74,20 +84,33 @@ var Network = function() {
   };
 
   var setFilter = function(newFilter) {
-    filter = newFilter;
+    filter[newFilter.type] = newFilter.key;
   };
+
+  var searchFilter = function(nodes, key) {};
+  var typeFilter = function(nodes, key) {
+    return nodes.filter(function(d, i) {
+      return d.type == key;
+    });
+  };
+  var skillsFilter = function(nodes, key) {
+    return nodes.filter(function(d, i) {
+      return d.skills && d.skills.indexOf(key) > -1;
+    });
+  }
+  var selectionFilter = function(nodes, key) {
+    return nodes.filter(function(d, i) {
+      return neighboring(d, key) || d == key;
+    });
+  }
 
   var filterNodes = function(allNodes) {
     var filteredNodes = allNodes;
-    if (filter && filter.key !== "-") {
-      filteredNodes = allNodes.filter(function(d, i) {
-        if (filter.type == "skills" && d.skills) {
-          return d.skills.indexOf(filter.key) > 0;
-        }
-        if (filter.type == "type") {
-          return d.type == filter.key;
-        }
-      });
+    if (filter.search || filter.type || filter.skill || filter.selection) {
+      // filteredNodes = filter.search ? searchNodes(filteredNodes) : filteredNodes;
+      filteredNodes = filter.type ? typeFilter(filteredNodes, filter.type) : filteredNodes;
+      filteredNodes = filter.skill ? skillsFilter(filteredNodes, filter.skill) : filteredNodes;
+      filteredNodes = filter.selection ? selectionFilter(filteredNodes, filter.selection) : filteredNodes;
     }
     return filteredNodes;
   };
@@ -169,6 +192,8 @@ var Network = function() {
     curNodesData = filterNodes(allData.nodes);
     curLinksData = filterLinks(allData.links, curNodesData);
 
+    network.resize();
+
     force.nodes(curNodesData)
       .links(curLinksData)
       .start();
@@ -192,7 +217,7 @@ var Network = function() {
     var mul = 2;
     
     self.select("circle")
-      .attr("r", function(d) { return mul*d.radius + 1; })
+      .attr("r", function(d) { return mul*d.radius + 2; })
 
     node.selectAll("circle").style("stroke", function(n) {
         if (neighboring(d, n) || d === n) { 
@@ -273,6 +298,8 @@ var Network = function() {
   };
 
   var showDetails = function(d, i) {
+    network.toggleFilter({type: "selection", key: d});
+
     hideDetails();
 
     var self = d3.select(this);
@@ -345,7 +372,11 @@ var Network = function() {
     detailsModal.modal('show');
   };
 
-  var hideDetails = function() {
+  var hideDetails = function(clear) {
+    if (clear){
+      network.toggleFilter({type: "selection", key: null});
+    }
+
     var myModal = d3.select("#myModal");
     var interests = myModal.select("#interests");
     var skills = myModal.select("#skills");
@@ -381,17 +412,17 @@ var Network = function() {
     svg.append("g").append("clipPath")
         .attr("id","small-pic-path")
       .append("circle")
-        .attr("r", 15);
+        .attr("r", circleRadius);
     
     svg.append("g").append("clipPath")
         .attr("id","large-pic-path")
       .append("circle")
-        .attr("r", 30);
+        .attr("r", circleRadius * 2);
 
     svg.append("g").append("clipPath")
         .attr("id","xl-pic-path")
       .append("circle")
-        .attr("r", 60);
+        .attr("r", circleRadius * 4);
     
     linksG = svg.append("g").attr("id", "links");
     nodesG = svg.append("g").attr("id", "nodes");
@@ -408,7 +439,9 @@ var Network = function() {
   //attach public functions to network object
   network.resize = function() {
     width = main[0][0].offsetWidth;
+    height = curNodesData.length/2 * circleRadius + 70;
     svg.attr("width", width);
+    svg.attr("height", height);
     force.size([width, height])
     .start();
   };
@@ -443,7 +476,7 @@ var processData = function(data) {
       "name": "100 State",
       "desc": "Est sint aliquip dolor pariatur Lorem ipsum veniam est eiusmod exercitation irure ex culpa ex. Incididunt aute ex tempor mollit commodo eiusmod minim adipisicing consectetur tempor veniam cillum. Adipisicing aliqua pariatur cupidatat enim aute esse culpa consequat dolor proident commodo irure. Exercitation minim laborum et aliquip commodo minim velit eiusmod eu.\r\n",
       "type": "100",
-      "radius": 30,
+      "radius": 2,
       "group": 0
     }
   );
@@ -459,7 +492,7 @@ var processData = function(data) {
           "skills": element.skills,
           "interests": element.interests,
           "type": "mem",
-          "radius": 15,
+          "radius": 1,
           "group": 1
         }
       );
@@ -473,7 +506,7 @@ var processData = function(data) {
           "url": element.email,
           "num_links": element.member_id.length,
           "type": "prj",
-          "radius": element.member_id.length + 10,
+          "radius": 1,
           "group": 2
         }
       );
@@ -506,7 +539,7 @@ var processData = function(data) {
           "desc": element.about,
           "url": element.url,
           "type": "spn",
-          "radius": 30,
+          "radius": 2,
           "group": 3
         }
       );
@@ -525,19 +558,19 @@ var processData = function(data) {
   d3.select(window).on('resize', myGraph.resize);
   
   $("#skills-filter").on("change", function(e) {
-    var key = $(this.val);
-    console.log("Making a filter!");
+    var key = $(this).val() == "" ? null : $(this).val();
     var filter = {
-      "type": "skills",
-      "key": $(this).val()
+      "type": "skill",
+      "key": key
     };
     myGraph.toggleFilter(filter);
   });
 
   d3.selectAll("#type-filter input").on("click", function(d) {
+    var key = d3.select(this).attr("value") == "" ? null : d3.select(this).attr("value");
     var filter = {
       "type": "type",
-      "key": d3.select(this).attr("value")
+      "key": key
     };
     myGraph.toggleFilter(filter);
   })

@@ -15,6 +15,15 @@ svg {
   margin: 0 auto;
 }
 
+#options {
+  position: fixed;
+  left: 15px;
+  top: 80px;
+}
+
+#main {
+  min-height: 200px;
+}
 .node {
   stroke: #fff;
   stroke-width: 0px;
@@ -52,6 +61,7 @@ svg {
   border: 5px solid red;
   border-radius: 1000px;
 }
+
 
 
 
