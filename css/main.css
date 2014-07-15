@@ -10,12 +10,18 @@ body {
 	/*background-position: 50%;*/
 }
 
+/*footer {
+  position: fixed !important;
+  bottom: 0;
+}*/
+
 svg {
   display: block;
   margin: 0 auto;
 }
 
 #options {
+  z-index: 99999;
   position: fixed;
   left: 15px;
   top: 80px;

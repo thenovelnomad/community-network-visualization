@@ -439,7 +439,7 @@ var Network = function() {
   //attach public functions to network object
   network.resize = function() {
     width = main[0][0].offsetWidth;
-    height = curNodesData.length/2 * circleRadius + 70;
+    height = curNodesData.length/1.5 * circleRadius + 70;
     svg.attr("width", width);
     svg.attr("height", height);
     force.size([width, height])
