@@ -2,8 +2,8 @@ var Network = function() {
   //initialize graph constants, variables accessed by all functions
   var main, svg;
   var width = 960; //initialize resize function
-  var height = width;
-  var detailsModal = $('#myModal').modal({"backdrop": false, "show": false});
+  var height = width*(3/4);
+  var detailsModal = jQuery('#myModal').modal({"backdrop": true, "show": false});
 
   //data variables
   var allData = [];
@@ -21,7 +21,7 @@ var Network = function() {
 
   //viz variables
   var circleRadius = 10;
-  var linkDistance = circleRadius * 4 * 2;
+  var linkDistance = circleRadius * 10;
   var layout = "force";
   var filter = {
     "search": null,
@@ -30,9 +30,7 @@ var Network = function() {
     "selection": null
   };
   var force = d3.layout.force()
-    .linkDistance(linkDistance)
     .gravity(.2)
-    .charge(-250)
     .size([width, height]);
 
   // initialize private functions
@@ -55,18 +53,41 @@ var Network = function() {
     return linkedByIndex[a.id + "," + b.id] || linkedByIndex[b.id + "," + a.id];
   };
 
+  var graphSize = function(data) {
+    circleRadius = (width/2)/Math.sqrt(10.0*data.nodes.length/Math.PI);
+    linkDistance = circleRadius * 8;
+    force.linkDistance(linkDistance)
+      .charge(-2*linkDistance);
+  }
+
   var setupData = function(data) {
-    var minRadius = (width - 70);
+    graphSize(data);
+
+    svg = main.append("svg")
+      .attr("width", width)
+      .attr("height", height);
+
+    svg.append("g").append("clipPath")
+        .attr("id","small-pic-path")
+      .append("circle")
+        .attr("r", circleRadius);
+    
+    svg.append("g").append("clipPath")
+        .attr("id","large-pic-path")
+      .append("circle")
+        .attr("r", circleRadius * 2);
+
+    svg.append("g").append("clipPath")
+        .attr("id","xl-pic-path")
+      .append("circle")
+        .attr("r", circleRadius * 4);
+
     countExtent = d3.extent(data.nodes, function(d) { 
       if (d.num_links){
         return d.num_links;
       } 
     });
     // circleRadius = d3.scale.sqrt().range([3, 12]).domain(countExtent);
-
-    data.nodes.forEach(function(d) {
-      d.radius = d.radius * circleRadius;
-    });
     
     // id's -> node objects
     var nodesMap = mapNodes(data.nodes);
@@ -133,15 +154,7 @@ var Network = function() {
     
     newNodes.append("circle")
       .attr("r", function(d) { return d.radius + 1; })
-      .style("fill", function(d) {
-        if (d.type === "prj") {
-          return "red";
-        } else {
-          return "white";
-        }
-      })
-      .style("stroke", "black")
-      .style("stroke-width", 2.0);
+      .attr("class", function(d) { return d.type; });
 
     newNodes.append("image")
       .attr("clip-path", function(d) {
@@ -165,7 +178,7 @@ var Network = function() {
       .attr("class", "hide")
       .attr("text-anchor", "middle")
       .attr("dx", 0)
-      .attr("dy", function(d) { return d.radius + 15; })
+      .attr("dy", function(d) { return d.radius + 25; })
       .text(function(d) { return d.name; });
     
     node.on("mouseover", hoverOn)
@@ -182,8 +195,8 @@ var Network = function() {
       .data(curLinksData, function(d) { return d.source.id + "_" + d.target.id; });
     link.enter().append("line")
       .attr("class", "link")
-      .attr("stroke", "red")
-      .attr("stroke-opacity", 0.8);
+      .attr("stroke", "black")
+      .attr("stroke-opacity", 1.0);
 
     link.exit().remove();
   }
@@ -192,7 +205,9 @@ var Network = function() {
     curNodesData = filterNodes(allData.nodes);
     curLinksData = filterLinks(allData.links, curNodesData);
 
-    network.resize();
+    curNodesData.forEach(function(element) {
+      element.radius = circleRadius;
+    })
 
     force.nodes(curNodesData)
       .links(curLinksData)
@@ -202,8 +217,8 @@ var Network = function() {
     updateLinks();
 
     force.on("tick", function() {
-        node.attr("cx", function(d) { return d.x = Math.max(35, Math.min(width - 35, d.x)); })
-          .attr("cy", function(d) { return d.y = Math.max(35, Math.min(height - 35, d.y)); });
+        node.attr("cx", function(d) { return d.x = Math.max(circleRadius*2, Math.min(width - circleRadius*2, d.x)); })
+          .attr("cy", function(d) { return d.y = Math.max(circleRadius*2, Math.min(height - circleRadius*2, d.y)); });
         link.attr("x1", function(d) { return d.source.x; })
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })
@@ -215,26 +230,17 @@ var Network = function() {
   var hoverOn = function(d, i){
     var self = d3.select(this);
     var mul = 2;
-    
+
+    var neighbors = selectionFilter(node, d);
+    var non = node.filter(function(n) {
+      return !neighboring(d, n) && n !== d;
+    });
+    var nbLinks = link.filter(function(l) { return l.source == d || l.target == d; });
+    var nonLinks = link.filter(function(l) { return l.source != d && l.target != d; });
+
     self.select("circle")
-      .attr("r", function(d) { return mul*d.radius + 2; })
+      .attr("r", function(d) { return mul*d.radius + 2; });
 
-    node.selectAll("circle").style("stroke", function(n) {
-        if (neighboring(d, n) || d === n) { 
-          return "red";
-        } else {
-          return "black";
-        }
-      })
-      .style("stroke-width", function(n) {
-        if (neighboring(d, n) || d === n) {
-          return 4.0;
-        } else {
-          return 2.0;
-        }
-      });
-
-    
     self.select("image")
       .attr("clip-path", function(d) {
         if (d.type === "mem") {
@@ -246,22 +252,18 @@ var Network = function() {
       .attr("x", function(d) { return -mul*d.radius; })
       .attr("y", function(d) { return -mul*d.radius; })
       .attr("width", function(d) { return 2*mul*d.radius; })
-      .attr("height", function(d) { return 2*mul*d.radius; });
+      .attr("height", function(d) { return 2*mul*d.radius; })
 
     self.select("text")
       .attr("dy", function(d) { return mul*d.radius + 15; });
 
     self.select("text").classed("hide", false);
 
-    link
-      .style("stroke-width", function(l) {
-        if (l.source == d || l.target == d) { return 4; } 
-        else { return Math.sqrt(l.value); }
-      })
-      .style("stroke-opacity", function(l) {
-        if (l.source == d || l.target == d) { return 1.0; } 
-        else { return 0.5; }
-      });
+    neighbors.classed("focus", true);
+    nbLinks.classed("focus", true);
+    non.classed("unfocus", true);
+    nonLinks.classed("unfocus", true);
+  
   };
 
   var hoverOff = function(d, i){
@@ -270,9 +272,22 @@ var Network = function() {
     self.select("circle")
       .attr("r", function(d) { return d.radius + 1; });
 
-    node.selectAll("circle")
-      .style("stroke-width", 2.0)
-      .style("stroke", "black");
+    var neighbors = selectionFilter(node, d);
+    var non = node.filter(function(n) {
+      return !neighboring(d, n);
+    });
+    var nbLinks = link.filter(function(l) { return l.source == d || l.target == d; });
+    var nonLinks = link.filter(function(l) { return l.source != d && l.target != d; });
+
+    neighbors.classed("focus", false);
+    nbLinks.classed("focus", false);
+    non.classed("unfocus", false);
+    nonLinks.classed("unfocus", false);
+
+    // node.selectAll("circle")
+    //   .style("stroke-width", 2.0)
+    //   .style("opacity", 1.0)
+    //   .style("stroke", "black");
 
     
     self.select("image")
@@ -292,13 +307,13 @@ var Network = function() {
     
     self.select("text").classed("hide", true);
 
-    link
-      .style("stroke-width", function(l) { return Math.sqrt(l.value); })
-      .style("stroke-opacity", function(l) { return 0.5; });
+    // link
+    //   .style("stroke-width", function(l) { return Math.sqrt(l.value); })
+    //   .style("stroke-opacity", function(l) { return 0.5; });
   };
 
   var showDetails = function(d, i) {
-    network.toggleFilter({type: "selection", key: d});
+    // network.toggleFilter({type: "selection", key: d});
 
     hideDetails();
 
@@ -309,6 +324,9 @@ var Network = function() {
     var projects = myModal.select("#projects");
     var interests = myModal.select("#interests");
     var projArr = [];
+
+    self.attr("x", width/2);
+    self.attr("y", height/2);
 
     if (d.url) {
       var link = label.select("a")[0][0] ? label.select("a") : label.append("a");
@@ -370,6 +388,8 @@ var Network = function() {
     }
 
     detailsModal.modal('show');
+
+    hoverOn(d, i);
   };
 
   var hideDetails = function(clear) {
@@ -404,25 +424,6 @@ var Network = function() {
   var network = function(selection, data) {
     main = d3.select(selection);
     allData = setupData(data);
-
-    svg = main.append("svg")
-      .attr("width", width)
-      .attr("height", height);
-
-    svg.append("g").append("clipPath")
-        .attr("id","small-pic-path")
-      .append("circle")
-        .attr("r", circleRadius);
-    
-    svg.append("g").append("clipPath")
-        .attr("id","large-pic-path")
-      .append("circle")
-        .attr("r", circleRadius * 2);
-
-    svg.append("g").append("clipPath")
-        .attr("id","xl-pic-path")
-      .append("circle")
-        .attr("r", circleRadius * 4);
     
     linksG = svg.append("g").attr("id", "links");
     nodesG = svg.append("g").attr("id", "nodes");
@@ -438,12 +439,9 @@ var Network = function() {
 
   //attach public functions to network object
   network.resize = function() {
-    width = main[0][0].offsetWidth;
-    height = curNodesData.length/1.5 * circleRadius + 70;
-    svg.attr("width", width);
-    svg.attr("height", height);
-    force.size([width, height])
-    .start();
+    force.stop();
+    // graphSize("");
+    update();
   };
 
   //return network object
@@ -453,7 +451,7 @@ var Network = function() {
 var getData = function(location, callback) {
   var type = location.slice(location.lastIndexOf("/")+1, location.lastIndexOf(".")-1);
   return function(data) {
-    $.getJSON(location, function(json) {
+    jQuery.getJSON(location, function(json) {
       json.forEach(function(element) {
         element.type = type;
         data.push(element);
@@ -557,8 +555,8 @@ var processData = function(data) {
 
   d3.select(window).on('resize', myGraph.resize);
   
-  $("#skills-filter").on("change", function(e) {
-    var key = $(this).val() == "" ? null : $(this).val();
+  jQuery("#skills-filter").on("change", function(e) {
+    var key = jQuery(this).val() == "" ? null : jQuery(this).val();
     var filter = {
       "type": "skill",
       "key": key
