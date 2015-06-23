@@ -467,7 +467,7 @@ var processData = function(data) {
 	graph.nodes.push(
 		{
 			"id": "100STATE",
-			"image": "/img/1.svg",
+			"image": "img/1.svg",
 			"name": "100 State",
 			"desc": "Est sint aliquip dolor pariatur Lorem ipsum veniam est eiusmod exercitation irure ex culpa ex. Incididunt aute ex tempor mollit commodo eiusmod minim adipisicing consectetur tempor veniam cillum. Adipisicing aliqua pariatur cupidatat enim aute esse culpa consequat dolor proident commodo irure. Exercitation minim laborum et aliquip commodo minim velit eiusmod eu.\r\n",
 			"type": "100",
@@ -482,7 +482,7 @@ var processData = function(data) {
 				{
 					"id": "MEM" + element.id,
 					"name": element.name,
-					"image": "/img/" + element.name.substring(0,1) + ".svg",
+					"image": "img/" + element.name.substring(0,1) + ".svg",
 					"desc": element.about,
 					"skills": element.skills,
 					"interests": element.interests,
@@ -496,7 +496,7 @@ var processData = function(data) {
 				{
 					"id": "PRJ" + element.id,
 					"name": element.company,
-					"image": "/img/" + element.company.substring(0,1) + "_light.svg",
+					"image": "img/" + element.company.substring(0,1) + "_light.svg",
 					"desc": element.about,
 					"url": element.email,
 					"num_links": element.member_id.length,
