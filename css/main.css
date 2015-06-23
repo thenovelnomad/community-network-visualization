@@ -1,0 +1,133 @@
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+
+body {
+	/*background: url("http://100state.com/wp-content/themes/100state/img/logo.svg") no-repeat;*/
+	background-color: #ffffff;
+	/*background-position: 50%;*/
+}
+
+/*footer {
+  position: fixed !important;
+  bottom: 0;
+}*/
+
+svg {
+  display: block;
+  margin: 0 auto;
+}
+
+#options {
+  z-index: 999;
+  position: fixed;
+  left: 15px;
+  top: 80px;
+}
+
+#main {
+  min-height: 200px;
+}
+
+.node {
+  stroke: black;
+  stroke-width: 2px;
+  fill: black;
+}
+
+.node circle {
+  fill: white;
+}
+
+.node circle.prj {
+  fill: red;
+}
+
+.node.focus circle{
+  stroke: red;
+  stroke-width: 4.0;
+  stroke-opacity: 1.0;
+}
+
+.node.unfocus circle{
+  stroke: black;
+  stroke-width: 1.0;
+  stroke-opacity: 0.25;
+}
+
+.node.unfocus circle.prj{
+  fill: #ffb3b3;
+}
+
+.node.unfocus image {
+  -webkit-filter: grayscale(1);
+  filter: grayscale(1);
+}
+
+.link {
+  stroke: black;
+  stroke-opacity: 1.0;
+}
+
+.link.focus {
+  stroke: red;
+  stroke-width: 4.0;
+  stroke-opacity: 1.0;
+}
+
+.link.unfocus {
+  stroke-opacity: 0.25;
+  stroke-width: 1.0;
+}
+
+.node text {
+  stroke: black;
+  fill: black;
+  stroke-width: 0px;
+  pointer-events: none;
+  font: 15px sans-serif;
+}
+
+.modal-open {
+  overflow: auto;
+}
+
+.modal {
+  top: auto;
+  bottom: 52px;
+  left: 17.25%;
+}
+
+.modal-backdrop.in {
+  opacity: 0;
+  filter: alpha(opacity=0);
+}
+
+.modal ul {
+  list-style-type: none;
+}
+
+.modal li {
+  padding: 0 20px 0 0;
+}
+
+.round {
+  border: 5px solid red;
+  border-radius: 1000px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,154 @@
+{
+	"nodes": [
+		{
+			"id": 1,
+			"name": "Member 1",
+			"type": "mem",
+			"url": "http://100state.com/wp-content/themes/100state/img/avatar.png",
+			"desc": "Here is some stuff about Member",
+			"radius": 30,
+			"group": 2
+		},
+		{
+			"id": 2,
+			"name": "Member 2",
+			"type": "mem",
+			"url": "http://100state.com/wp-content/themes/100state/img/avatar.png",
+			"desc": "Here is some stuff about Member",
+			"radius": 30,
+			"group": 2
+		},
+		{
+			"id": 3,
+			"name": "Member 3",
+			"type": "mem",
+			"url": "http://100state.com/wp-content/themes/100state/img/avatar.png",
+			"desc": "Here is some stuff about Member",
+			"radius": 30,
+			"group": 2
+		},
+		{
+			"id": 4,
+			"name": "Member 4",
+			"type": "mem",
+			"url": "http://100state.com/wp-content/themes/100state/img/avatar.png",
+			"radius": 30,
+			"group": 2
+		},
+		{
+			"id": 5,
+			"name": "Member 5",
+			"type": "mem",
+			"url": "http://100state.com/wp-content/themes/100state/img/avatar.png",
+			"radius": 30,
+			"group": 2
+		},
+		{
+			"id": 6,
+			"name": "Member 6",
+			"type": "mem",
+			"url": "http://100state.com/wp-content/themes/100state/img/avatar.png",
+			"radius": 30,
+			"group": 2
+		},
+		{
+			"id": 7,
+			"name": "Project 1",
+			"type": "prj",
+			"radius": 15,
+			"group": 3
+		},
+		{
+			"id": 8,
+			"name": "Project 2",
+			"type": "prj",
+			"radius": 15,
+			"group": 3
+		},
+		{
+			"id": 9,
+			"name": "Project 3",
+			"type": "prj",
+			"radius": 15,
+			"group": 3
+		},
+		{
+			"id": 10,
+			"name": "Project 4",
+			"type": "prj",
+			"radius": 15,
+			"group": 3
+		},
+		{
+			"id": 11,
+			"name": "Project 5",
+			"type": "prj",
+			"radius": 15,
+			"group": 3
+		},
+		{
+			"id": 12,
+			"name": "Project 6",
+			"type": "prj",
+			"radius": 15,
+			"group": 3
+		}
+	],
+	"links": [
+		{
+			"source":0,
+			"target":6,
+			"value":1
+		},
+		{
+			"source":1,
+			"target":7,
+			"value":1
+		},
+		{
+			"source":2,
+			"target":8,
+			"value":1
+		},
+		{
+			"source":3,
+			"target":10,
+			"value":1
+		},
+		{
+			"source":4,
+			"target":10,
+			"value":1
+		},
+		{
+			"source":0,
+			"target":11,
+			"value":1
+		},
+		{
+			"source":1,
+			"target":6,
+			"value":1
+		},
+		{
+			"source":8,
+			"target":2,
+			"value":1
+		},
+		{
+			"source":3,
+			"target": 9,
+			"value": 3
+		},
+		{
+			"source":3,
+			"target": 6,
+			"value": 3
+		},
+		{
+			"source":4,
+			"target":10,
+			"value": 3
+		}
+	]
+}

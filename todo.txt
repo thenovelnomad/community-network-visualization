@@ -1,0 +1,65 @@
+TODO
+
+  Priority list
+    DONE - Add projects to member modal
+    DONE - Add interests to members data structure
+    Skill search
+    Interest search
+    UPdate graph on click to show only clicked node and connected
+    
+  
+  Community data visualization
+
+    Elements
+
+        Members
+          DONE - hover highlights connected nodes
+          Filter by skills
+          click opens modal ala current webpage
+            or sub-frame?
+          add tagline to data structure
+          
+
+
+        Projects
+          Create d3 scale for project node radius
+          DONE - hover highlights connected nodes
+          use company icons as nodes
+
+          DONE - boolean flag for "100state project"
+        
+        Ideas
+          Text-only, unlinked node
+          Font size/weight scaled by likes(rsvps?)
+          ?Can transform into project
+
+        Events
+
+        Add sponsors
+
+        100 state = node 0
+          connect to sponsors
+          other projects
+
+    Features
+
+      Data processing
+        compile events dbs
+
+      DONE - hover highlights connected nodes
+      Zoom and/or responsive scale
+
+      layout change to sorted groups
+      
+
+DONE
+
+  Member picture as node
+  Data processing
+        compile members, projects test data
+  100state logo background
+  Node size scaled by number of links
+  show/hide member name (& picture ?) on hover
+
+
+Website re-design ideas
