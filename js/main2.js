@@ -482,7 +482,7 @@ var processData = function(data) {
 				{
 					"id": "MEM" + element.id,
 					"name": element.name,
-					"image": "img/" + element.name.substring(0,1).toLowercase() + ".svg",
+					"image": "img/" + element.name.toLowerCase().substring(0,1) + ".svg",
 					"desc": element.about,
 					"skills": element.skills,
 					"interests": element.interests,
@@ -496,7 +496,7 @@ var processData = function(data) {
 				{
 					"id": "PRJ" + element.id,
 					"name": element.company,
-					"image": "img/" + element.company.substring(0,1).toLowercase() + "_light.svg",
+					"image": "img/" + element.company.toLowerCase().substring(0,1) + "_light.svg",
 					"desc": element.about,
 					"url": element.email,
 					"num_links": element.member_id.length,
