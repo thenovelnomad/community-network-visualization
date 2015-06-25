@@ -8,7 +8,7 @@ var Network = function() {
 	var height = width*(3/4) > 400 ? width*(3/4) : width*(4/3);
 	var detailsModal = jQuery('#myModal').modal({"backdrop": true, "show": false});
 	var hoverScale = d3.scale.linear().domain([400,1000]).range([4, 3]);
-	var radialScale = d3.scale.linear().domain([400,1000]).range([8,15]);
+	var radialScale = d3.scale.linear().domain([400,1000]).range([5,10]);
 	var gravScale = d3.scale.linear().domain([400,1000]).range([0.4, 0.2]);
 	var linkScale = d3.scale.linear().domain([400,1000]).range([3, 7]);
 	var chargeScale = d3.scale.linear().domain([400,1000]).range([-2, -1]);
@@ -29,8 +29,8 @@ var Network = function() {
 	var link = null;
 
 	//viz variables
-	var circleRadius = 3;
-	var linkDistance = circleRadius * 5;
+	var circleRadius = radialScale(width);
+	var linkDistance = circleRadius * linkScale(width);
 	var layout = "force";
 	var filter = {
 		"search": null,
@@ -63,51 +63,76 @@ var Network = function() {
 	};
 
 	var graphSize = function(data) {
-		circleRadius = 10 //(width/2)/Math.sqrt(10.0*data.nodes.length/Math.PI);
-		linkDistance = circleRadius * 8;
-		force.linkDistance(linkDistance)
-			.charge(-2*linkDistance);
-	}
+	  width = window.innerWidth < 845 ? window.innerWidth : window.innerWidth*0.8;
+	  width = width > 990 ? 990 : width;
+	  height = width*(3/4) > 400 ? width*(3/4) : width*(4/3);
+	  main.select("svg")
+	    .attr("width", width)
+	    .attr("height", height);
+
+	  circleRadius = radialScale(width);
+
+	  linkDistance = circleRadius * linkScale(width);
+	  force.linkDistance(linkDistance)
+	    .charge(chargeScale(width)*linkDistance)
+	    .size([width, height]);
+	};
 
 	var setupData = function(data) {
+		svg = main.append("svg")
+		  .attr("width", width)
+		  .attr("height", height)
+		  .append("g");
+		  // .call(d3.behavior.zoom().scaleExtent([1, 8]).on("zoom", zoom))
+		  // .append("g");
+
 		graphSize(data);
 
-		svg = main.append("svg")
-			.attr("width", width)
-			.attr("height", height);
+		// svg = main.append("svg")
+		// 	.attr("width", width)
+		// 	.attr("height", height);
 
-		svg.append("g").append("clipPath")
-				.attr("id","small-pic-path")
-			.append("circle")
-				.attr("r", circleRadius);
+		// svg.append("g").append("clipPath")
+		// 		.attr("id","small-pic-path")
+		// 	.append("circle")
+		// 		.attr("r", circleRadius);
 		
-		svg.append("g").append("clipPath")
-				.attr("id","large-pic-path")
-			.append("circle")
-				.attr("r", circleRadius * 2);
+		// svg.append("g").append("clipPath")
+		// 		.attr("id","large-pic-path")
+		// 	.append("circle")
+		// 		.attr("r", circleRadius * 2);
 
-		svg.append("g").append("clipPath")
-				.attr("id","xl-pic-path")
-			.append("circle")
-				.attr("r", circleRadius * 4);
+		// svg.append("g").append("clipPath")
+		// 		.attr("id","xl-pic-path")
+		// 	.append("circle")
+		// 		.attr("r", circleRadius * 4);
 
 		countExtent = d3.extent(data.nodes, function(d) { 
 			if (d.num_links){
 				return d.num_links;
-			} 
+			}
 		});
 		// circleRadius = d3.scale.sqrt().range([3, 12]).domain(countExtent);
 		
+		data.nodes.forEach(function(element) {
+		  var scale = Math.sqrt(element.scale/Math.PI);
+		  element.radius = scale*circleRadius;
+		});
+
 		// id's -> node objects
 		var nodesMap = mapNodes(data.nodes);
 		
 		// switch links to point to node objects instead of id's
-		data.links.forEach(function(l) {
-			l.source = nodesMap.get(l.source);
-			l.target = nodesMap.get(l.target);
-		
-			// linkedByIndex is used for link sorting
-			linkedByIndex[l.source.id + "," + l.target.id] = 1;
+		data.links.forEach(function(l, index, array) {
+		  if (nodesMap.has(l.source) && nodesMap.has(l.target)){
+		    l.source = nodesMap.get(l.source);
+		    l.target = nodesMap.get(l.target);
+
+		    // linkedByIndex is used for link sorting
+		    linkedByIndex[l.source.id + "," + l.target.id] = 1;
+		  } else {
+		    array.splice(index, 1);
+		  }
 		});
 
 		return data;
@@ -154,46 +179,65 @@ var Network = function() {
 	};
 
 	var updateNodes = function() {
-		node = nodesG.selectAll("g.node")
-			.data(curNodesData, function(d) { return d.id; });
+	  node = nodesG.selectAll("g.node")
+	    .data(curNodesData, function(d) { return d.id; });
 
-		var newNodes = node.enter().append("g")
-			.attr("class", "node")
-			.call(force.drag);
-		
-		newNodes.append("circle")
-			.attr("r", function(d) { return d.radius + 1; })
-			.attr("class", function(d) { return d.type; });
+	  var newNodes = node.enter().append("g")
+	    .attr("class", "node")
+	    .attr("id", function(d) { return d.id; })
+	    .call(force.drag);
 
-		newNodes.append("image")
-			.attr("clip-path", function(d) {
-				return "url(#small-pic-path)";
-			})
-			.attr("xlink:href", function(d) { 
-				if (d.image) {
-					return d.image;
-				}
-			})
-			.attr("x", function(d) { return -1*d.radius; })
-			.attr("y", function(d) { return -1*d.radius; })
-			.attr("width", function(d) { return 2*d.radius; })
-			.attr("height", function(d) { return 2*d.radius; });
+	  newNodes.append("circle")
+	    .attr("r", function(d) { return d.radius + 1; })
+	    .attr("class", function(d) { return d.type + " bg"; });
 
-		newNodes.append("text")
-			.attr("class", "hide")
-			.attr("text-anchor", "middle")
-			.attr("dx", 0)
-			.attr("dy", function(d) { return d.radius + 25; })
-			.text(function(d) { return d.name; });
-		
-		node.on("mouseover", hoverOn)
-				.on("mouseout", hoverOff);
+	  newNodes.append("clipPath")
+	    .attr("id", function (d) { return d.id + "-clip"})
+	    .append("circle")
+	    .attr("r", function(d) { return d.radius; })
+	    .attr("class", "clip");
 
-		node.on("mouseup", showDetails);
-		detailsModal.on("hidden.bs.modal", hideDetails);
+	  newNodes.append("image")
+	    .attr("clip-path", function(d) {
+	      return "url(#" + d.id + "-clip)";
+	    })
+	    .attr("xlink:href", function(d) {
+	      if (d.image) {
+	        return d.image;
+	      }
+	    })
+	    .attr("x", function(d) { return -1*d.radius; })
+	    .attr("y", function(d) { return -1*d.radius; })
+	    .attr("width", function(d) { return 2*d.radius; })
+	    .attr("height", function(d) { return 2*d.radius; });
 
-		node.exit().remove();
-	}
+	  newNodes.append("text")
+	    .attr("class", "hide")
+	    .attr("text-anchor", "middle")
+	    .attr("dx", 0)
+	    .attr("dy", function(d) { return d.radius + 25; })
+	    .text(function(d) { return d.name; });
+
+	  node.on("mouseover", hoverOn)
+	      .on("mouseout", hoverOff);
+
+	  node.on("click", function(d, i) {
+	    // ignore drag
+	    if (d3.event.defaultPrevented) {
+	      return;
+	    }
+	    var self = d3.select(this);
+	    showDetails(d, i, self);
+	  });
+
+	  detailsModal.on("hide.bs.modal", function() {
+	    allData.nodes.forEach(function(d) { d.fixed = false; });
+	    force.resume();
+	    hideDetails(true);
+	  });
+
+	  node.exit().remove();
+	};
 
 	var updateLinks = function() {
 		link = linksG.selectAll(".link")
@@ -233,188 +277,236 @@ var Network = function() {
 	};
 
 	var hoverOn = function(d, i){
-		var self = d3.select(this);
-		var mul = 2;
+	  var self = d3.select(this);
+	  var mul = hoverScale(width)*10;
 
-		var neighbors = selectionFilter(node, d);
-		var non = node.filter(function(n) {
-			return !neighboring(d, n) && n !== d;
-		});
-		var nbLinks = link.filter(function(l) { return l.source == d || l.target == d; });
-		var nonLinks = link.filter(function(l) { return l.source != d && l.target != d; });
+	  node.sort(function (a, b) { // select the parent and sort the path's
+	    if (a.id != d.id) return -1;               // a is not the hovered element, send "a" to the back
+	    else return 1;                             // a is the hovered element, bring "a" to the front
+	  });
 
-		self.select("circle")
-			.attr("r", function(d) { return mul*d.radius + 2; });
+	  var neighbors = selectionFilter(node, d);
+	  var non = node.filter(function(n) {
+	    return !neighboring(d, n) && n !== d;
+	  });
+	  var nbLinks = link.filter(function(l) { return l.source == d || l.target == d; });
+	  var nonLinks = link.filter(function(l) { return l.source != d && l.target != d; });
 
-		self.select("image")
-			.attr("clip-path", function(d) {
-				return "url(#large-pic-path)";
-			})
-			.attr("x", function(d) { return -mul*d.radius; })
-			.attr("y", function(d) { return -mul*d.radius; })
-			.attr("width", function(d) { return 2*mul*d.radius; })
-			.attr("height", function(d) { return 2*mul*d.radius; })
+	  self.select("circle.clip")
+	    .attr("r", function(d) { return mul; });
 
-		self.select("text")
-			.attr("dy", function(d) { return mul*d.radius + 15; });
+	  self.select("circle.bg")
+	    .attr("r", function(d) { return mul + 2; });
 
-		self.select("text").classed("hide", false);
+	  self.select("image")
+	    .attr("x", function(d) { return -mul; })
+	    .attr("y", function(d) { return -mul; })
+	    .attr("width", function(d) { return 2*mul; })
+	    .attr("height", function(d) { return 2*mul; });
 
-		neighbors.classed("focus", true);
-		nbLinks.classed("focus", true);
-		non.classed("unfocus", true);
-		nonLinks.classed("unfocus", true);
-	
+	  self.select("text")
+	    .attr("dy", function(d) { return 1.6*mul; });
+
+	  self.select("text").classed("hide", false);
+
+	  neighbors.classed("focus", true);
+	  nbLinks.classed("focus", true);
+	  non.classed("unfocus", true);
+	  nonLinks.classed("unfocus", true);
+
 	};
 
 	var hoverOff = function(d, i){
-		var self = d3.select(this);
-		
-		self.select("circle")
-			.attr("r", function(d) { return d.radius + 1; });
+	  var self = d3.select(this);
 
-		var neighbors = selectionFilter(node, d);
-		var non = node.filter(function(n) {
-			return !neighboring(d, n);
-		});
-		var nbLinks = link.filter(function(l) { return l.source == d || l.target == d; });
-		var nonLinks = link.filter(function(l) { return l.source != d && l.target != d; });
+	  self.select("circle.clip")
+	    .attr("r", function(d) { return d.radius; });
 
-		neighbors.classed("focus", false);
-		nbLinks.classed("focus", false);
-		non.classed("unfocus", false);
-		nonLinks.classed("unfocus", false);
+	  self.select("circle.bg")
+	    .attr("r", function(d) { return d.radius + 1; });
 
-		// node.selectAll("circle")
-		//   .style("stroke-width", 2.0)
-		//   .style("opacity", 1.0)
-		//   .style("stroke", "black");
+	  var neighbors = selectionFilter(node, d);
+	  var non = node.filter(function(n) {
+	    return !neighboring(d, n);
+	  });
+	  var nbLinks = link.filter(function(l) { return l.source == d || l.target == d; });
+	  var nonLinks = link.filter(function(l) { return l.source != d && l.target != d; });
 
-		
-		self.select("image")
-			.attr("clip-path", function(d) {
-				return "url(#small-pic-path)";
-			})
-			.attr("x", function(d) { return -1*d.radius; })
-			.attr("y", function(d) { return -1*d.radius; })
-			.attr("width", function(d) { return 2*d.radius; })
-			.attr("height", function(d) { return 2*d.radius; });
-		self.select("text")
-			.attr("dy", function(d) { return d.radius + 15; });
-		
-		self.select("text").classed("hide", true);
+	  neighbors.classed("focus", false);
+	  nbLinks.classed("focus", false);
+	  non.classed("unfocus", false);
+	  nonLinks.classed("unfocus", false);
 
-		// link
-		//   .style("stroke-width", function(l) { return Math.sqrt(l.value); })
-		//   .style("stroke-opacity", function(l) { return 0.5; });
+	  self.select("image")
+	    .attr("x", function(d) { return -1*d.radius; })
+	    .attr("y", function(d) { return -1*d.radius; })
+	    .attr("width", function(d) { return 2*d.radius; })
+	    .attr("height", function(d) { return 2*d.radius; });
+	  self.select("text")
+	    .attr("dy", function(d) { return d.radius + 15; });
+
+	  self.select("text").classed("hide", true);
 	};
 
-	var showDetails = function(d, i) {
-		// network.toggleFilter({type: "selection", key: d});
+	var showDetails = function(d, i, self) {
 
-		hideDetails();
+	  network.toggleFilter({type: "selection", key: d});
 
-		var self = d3.select(this);
-		var myModal = d3.select("#myModal");
-		var label = myModal.select("#myModalLabel");
-		var skills = myModal.select("#skills");
-		var projects = myModal.select("#projects");
-		var interests = myModal.select("#interests");
-		var projArr = [];
+	  allData.nodes.forEach(function(d) { d.fixed = false; });
+	  d.fixed = true;
+	  d.px = d.x = width/2;
+	  d.py = d.y = height/6;
+	  force.resume();
 
-		self.attr("x", width/2);
-		self.attr("y", height/2);
+	  hideDetails();
 
-		if (d.url) {
-			var link = label.select("a")[0][0] ? label.select("a") : label.append("a");
-			link
-				.attr("src", d.url)
-				.text(d.name);
-		} else {
-			myModal.select("#myModalLabel")
-				.text(d.name);
-		}
+	  var offset = jQuery("#main>svg").offset();
+	  window.scroll( 0, offset.top );
 
-		if (d.image) {
-			myModal.select("img")
-				.attr("src", d.image)
-				.classed("round", d.type == "mem");
-			myModal.select("#modal-image").classed("hide", false);
-			myModal.select("#modal-info").classed("col-md-9", true);
-		} 
+	  var myModal = d3.select("#myModal");
+	  var label = myModal.select("#myModalLabel");
+	  var skills = myModal.select("#skills");
+	  var interests = myModal.select("#interests");
+	  var links = myModal.select("#links");
+	  var linkArr = [];
 
-		myModal.select("#about").select("p")
-			.text(d.desc);
+	  links.select("strong")
+	    .text(function() {
+	      switch(d.type){
+	        case "mem":
+	          return "Projects";
+	        case "prj":
+	          return "Members";
+	        default:
+	          return "";
+	      }
+	    });
 
-		if (d.type == "mem"){
-			if (d.interests.length > 0) {
-				interests.select("ul").selectAll("li")
-					.data(d.interests).enter()
-					.append("li")
-					.classed("pull-left", true)
-					.text(function(d) { return d; });
-			
-				interests.classed("hide", false);
-			}
-			
-			if (d.skills.length > 0) {
-				skills.select("ul").selectAll("li")
-					.data(d.skills).enter()
-					.append("li")
-					.classed("pull-left", true)
-					.text(function(d) { return d; });
-	
-				skills.classed("hide", false);
-			}
+	  if (d.url) {
+	    var link = label.select("a")[0][0] ? label.select("a") : label.append("a");
+	    link
+	      .attr("href", d.url)
+	      .attr("target", "_blank")
+	      .text(d.name);
+	  } else {
+	    label
+	      .text(d.name);
+	  }
 
-			allData.nodes.forEach(function(element, index, array) {
-				if (neighboring(d, element)) {
-					projArr.push(element.name);
-				}
-			});
+	  if (d.image) {
+	    myModal.select("img")
+	      .attr("src", d.image);
+	    myModal.select("#modal-image").classed("hide", false);
+	  } else {
+	    myModal.select("img")
+	      .attr("src", "/img/avatar.png");
+	    myModal.select("#modal-image").classed("hide", false);
+	  }
 
-			if (projArr.length > 0) {
-				projects.select("ul").selectAll("li")
-					.data(projArr).enter()
-					.append("li")
-					.classed("pull-left", true)
-					.text(function(d) { return d; });
+	  myModal.select("#about").select("p")
+	    .html(d.desc);
 
-				projects.classed("hide", false);
-			}
-		}
+	  if (d.tagline) {
+	    myModal.select("#tagline")
+	      .select("strong")
+	      .html(d.tagline);
+	    myModal.select("#tagline")
+	      .classed("hide", false);
+	  }
 
-		detailsModal.modal('show');
+	  if (d.skills){
+	    if (d.skills.length > 0) {
+	      var skill_link = skills.select("ul").selectAll("li")
+	        .data(d.skills).enter()
+	        .append("li");
+	      skill_link
+	        .append("span")
+	        .text(function(d) {
+	          return d;
+	        })
+	        .classed("badge", true);
 
-		hoverOn(d, i);
+	      skills.classed("hide", false);
+	    }
+	  }
+
+	  if (d.interests){
+	    if (d.interests.length > 0) {
+	      var interest_link = interests.select("ul").selectAll("li")
+	        .data(d.interests).enter()
+	        .append("li");
+	      interest_link
+	        .append("span")
+	        .text(function(d) {
+	          return d;
+	        })
+	        .classed("badge", true);
+
+	      interests.classed("hide", false);
+	    }
+	  }
+
+	  if (d.type != "spn") {
+	    allData.nodes.forEach(function(element, index, array) {
+	      if (neighboring(d, element)) {
+	        linkArr.push(element);
+	      }
+	    });
+
+	    if (linkArr.length > 0) {
+	      links.select("ul").selectAll("li")
+	        .data(linkArr).enter()
+	        .append("li").append("a")
+	        .attr("href", function (d) {
+	          return d.url;
+	        })
+	        .attr("target", "_blank")
+	        .text(function(d) { return d.name; });
+
+	      links.classed("hide", false);
+	    }
+	  }
+
+	  detailsModal.modal('show');
+	  // hoverOn(d, i);
 	};
 
 	var hideDetails = function(clear) {
-		if (clear){
-			network.toggleFilter({type: "selection", key: null});
-		}
+	  if (clear){
+	    network.toggleFilter({type: "selection", key: null});
+	  }
 
-		var myModal = d3.select("#myModal");
-		var interests = myModal.select("#interests");
-		var skills = myModal.select("#skills");
-		var projects = myModal.select("#projects");
+	  var myModal = d3.select("#myModal");
+	  var skills = myModal.select("#skills");
+	  var interests = myModal.select("#interests");
+	  var links = myModal.select("#links");
 
-		myModal.select("img").attr("src", "");
-		myModal.select("#modal-image").classed("hide", true);
-		myModal.select("#modal-info").classed("col-md-9", false);
+	  myModal.select("img").attr("src", "");
+	  myModal.select("#modal-image").classed("hide", true);
 
-		myModal.select("#myModalLabel")
-			.text("")
-			.select("a").remove();
+	  myModal.select("#myModalLabel")
+	    .text("")
+	    .select("a").remove();
 
-		interests.select("ul").selectAll("li").remove();
-		interests.classed("hide", true);
-		skills.select("ul").selectAll("li").remove();
-		skills.classed("hide", true);
-		projects.select("ul").selectAll("li").remove();
-		projects.classed("hide", true);
+	  myModal.select("#about").select("p")
+	    .html("");
 
-	}
+	  myModal.select("#tagline")
+	    .select("strong")
+	    .html("");
+	  myModal.select("#tagline")
+	    .classed("hide", true);
+
+	  skills.select("ul").selectAll("li").remove();
+	  skills.classed("hide", true);
+
+	  interests.select("ul").selectAll("li").remove();
+	  interests.classed("hide", true);
+
+	  links.select("ul").selectAll("li").remove();
+	  links.classed("hide", true);
+
+	};
 
 	
 	//initialize graph with selection, data
@@ -468,7 +560,7 @@ var processData = function(data) {
 		{
 			"id": "100STATE",
 			"image": "img/1.svg",
-			"name": "100 State",
+			"name": "100state",
 			"desc": "Est sint aliquip dolor pariatur Lorem ipsum veniam est eiusmod exercitation irure ex culpa ex. Incididunt aute ex tempor mollit commodo eiusmod minim adipisicing consectetur tempor veniam cillum. Adipisicing aliqua pariatur cupidatat enim aute esse culpa consequat dolor proident commodo irure. Exercitation minim laborum et aliquip commodo minim velit eiusmod eu.\r\n",
 			"type": "100",
 			"radius": 2,

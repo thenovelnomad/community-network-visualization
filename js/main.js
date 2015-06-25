@@ -89,7 +89,7 @@ var Network = function() {
     force.linkDistance(linkDistance)
       .charge(chargeScale(width)*linkDistance)
       .size([width, height]);
-  }
+  };
 
   var setupData = function(data) {
     svg = main.append("svg")

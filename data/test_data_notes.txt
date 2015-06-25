@@ -5,7 +5,6 @@ Member template:
   '{{repeat(100, 150)}}',
   {
     id: '{{index()}}',
-    image: "http://100state.com/wp-content/themes/100state/img/avatar.png",
     name: '{{firstName()}} {{surname()}}',
     company: '{{company().toUpperCase()}}',
     email: '{{email()}}',
@@ -27,7 +26,6 @@ Project template:
   {
     id: '{{index()}}',
     isActive: '{{bool()}}',
-    picture: 'http://placehold.it/32x32',
     company: '{{company().toUpperCase()}}',
     email: '{{email()}}',
     about: '{{lorem(1, "paragraphs")}}',
