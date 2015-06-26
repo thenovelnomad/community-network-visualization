@@ -1,7 +1,7 @@
 Dynamic Community Visualization
 ==============
-    This is a test project using d3.js to create a force diagram visualization of the interconnections through a
-    coworking space.
+    This is a test project using d3.js to create a force diagram visualization 
+    of the interconnections through a coworking space.
 
     The data shown includes members, projects, events, and sponsors.
     Copyright (C) 2014  the novel nomad
